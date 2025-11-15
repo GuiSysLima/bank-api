@@ -42,10 +42,8 @@ public class User {
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
 
-    @NotBlank(message = "Password cannot be blank")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "keycloak_id", nullable = false, unique = true)
+    private String keycloakId;
 
     @OneToMany(
         mappedBy = "user",
@@ -53,12 +51,4 @@ public class User {
         orphanRemoval = true
     )
     private Set<Account> accounts = new HashSet<>();
-
-
-    public User(String name, String email) {
-        this.name = name;
-        this.email = email;
-        this.cpf = cpf;
-        this.password = password;
-    }
 }
