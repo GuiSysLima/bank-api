@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.Optional;
 
 import br.edu.ufape.bank.dto.responses.UserResponseDTO;
+import br.edu.ufape.bank.dto.responses.UserResponseDTO;
 import br.edu.ufape.bank.dto.requests.UserRequestDTO;
 import br.edu.ufape.bank.exceptions.UnprocessableEntityException;
 import br.edu.ufape.bank.exceptions.ResourceNotFoundException;
@@ -79,13 +80,13 @@ public class UserService {
         String keycloakId = jwt.getSubject();
 
         return userRepository.findByKeycloakId(keycloakId)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado no banco de dados "));
+            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado no banco de dados"));
     }
 
     @Transactional
     public UserResponseDTO findUserById(Long id) {
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         return toResponseDTO(user);
     }
