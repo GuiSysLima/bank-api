@@ -12,6 +12,7 @@ services:
       - "8180:8080"
     volumes:
       - keycloak-data:/opt/keycloak/data
+      - ./bank-theme:/opt/keycloak/themes/bank-theme:ro
 
 volumes:
   keycloak-data:
