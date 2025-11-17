@@ -1,0 +1,16 @@
+
+body {
+  background-color: #f0f4f8;
+}
+
+#kc-login {
+  background-color: #0056b3;
+  border-color: #004a9c;
+}
+
+/* Adicionar um logo (você precisaria adicionar o logo em /resources/img/logo.png) */
+.login-pf-page .login-pf-header {
+  /* background-image: url(../img/logo.png); */
+  /* background-size: contain; */
+  /* ... etc ... */
+}
