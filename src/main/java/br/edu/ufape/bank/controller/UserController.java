@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 
-import br.edu.ufape.bank.dto.reponses.UserResponseDTO;
+import br.edu.ufape.bank.dto.responses.UserResponseDTO;
 import br.edu.ufape.bank.dto.requests.UserRequestDTO;
 import br.edu.ufape.bank.exceptions.ResourceNotFoundException;
 import br.edu.ufape.bank.services.UserService;
