@@ -4,8 +4,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
+import java.util.Optional;
 
-import br.edu.ufape.bank.dto.reponses.UserResponseDTO;
+import br.edu.ufape.bank.dto.responses.UserResponseDTO;
 import br.edu.ufape.bank.dto.requests.UserRequestDTO;
 import br.edu.ufape.bank.exceptions.UnprocessableEntityException;
 import br.edu.ufape.bank.exceptions.ResourceNotFoundException;
@@ -42,34 +43,33 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO updateUser(Long id, UserRequestDTO request, Authentication authentication) {
-        // 1. Pega o usuário logado (do token)
+        
         User userFromToken = getAuthenticatedUser(authentication);
 
-        // 2. Busca o usuário que ele quer editar (pelo ID da URL)
         User userToUpdate = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: " + id));
 
-        // 3. A VERIFICAÇÃO DE SEGURANÇA MAIS IMPORTANTE:
-        // O usuário do token é o mesmo usuário que ele está tentando editar?
         if (!userFromToken.getId().equals(userToUpdate.getId())) {
-            // Se não for, é uma tentativa de editar o perfil de outra pessoa.
             throw new SecurityException("Acesso negado. Você só pode editar seu próprio perfil.");
         }
 
-        // 4. Se ele é o dono, atualize os campos permitidos.
-        // O que pode ser editado? Provavelmente só o 'name'.
-        // 'email' e 'cpf' são sensíveis e atrelados ao Keycloak.
-        // Vamos atualizar apenas o nome por enquanto:
         userToUpdate.setName(request.name());
         
-        // (Nota: Se você reusar o UserRequestDTO, ele terá email e cpf. 
-        // Certifique-se de que sua lógica não permite sobrescrever dados críticos).
-
         User savedUser = userRepository.save(userToUpdate);
         return new UserResponseDTO(savedUser);
     }
 
-    // CRIE ESTE MÉTODO HELPER
+    public Optional<User> findAuthenticatedUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return Optional.empty();
+        }
+        
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String keycloakId = jwt.getSubject();
+        
+        return userRepository.findByKeycloakId(keycloakId); 
+    }
+
     public User getAuthenticatedUser(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new SecurityException("Usuário não autenticado.");

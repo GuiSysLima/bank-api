@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 
-import br.edu.ufape.bank.dto.reponses.UserResponseDTO;
+import br.edu.ufape.bank.dto.responses.UserResponseDTO;
 import br.edu.ufape.bank.dto.requests.UserRequestDTO;
 import br.edu.ufape.bank.exceptions.ResourceNotFoundException;
 import br.edu.ufape.bank.services.UserService;
@@ -64,8 +64,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         
         } catch (SecurityException e) {
-            // Se o service lançar "Acesso negado"
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getMyProfile(Authentication authentication) {
+        return userService.findAuthenticatedUser(authentication)
+            
+            .map(user -> new UserResponseDTO(user)) 
+            
+            .map(ResponseEntity::ok)
+
+            .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }
