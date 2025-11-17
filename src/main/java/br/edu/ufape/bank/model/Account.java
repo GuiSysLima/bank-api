@@ -28,6 +28,7 @@ import br.edu.ufape.bank.model.enums.AccountType;
 @Setter
 @NoArgsConstructor
 public class Account {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,10 +37,6 @@ public class Account {
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull
     private User user;
-
-    @NotBlank
-    @Column(nullable = false, length = 4)
-    private String agency;
 
     @NotBlank
     @Column(nullable = false, unique = true, length = 10)
@@ -55,9 +52,8 @@ public class Account {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
 
-    public Account(User user, String agency, String accountNumber, AccountType accountType) {
+    public Account(User user, String accountNumber, AccountType accountType) {
         this.user = user;
-        this.agency = agency;
         this.accountNumber = accountNumber;
         this.accountType = accountType;
         this.balance = BigDecimal.ZERO;

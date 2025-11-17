@@ -1,4 +1,4 @@
-package br.edu.ufape.bank.dto.reponses;
+package br.edu.ufape.bank.dto.responses;
 
 import java.math.BigDecimal;
 
