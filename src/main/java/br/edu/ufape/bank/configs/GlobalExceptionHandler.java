@@ -1,5 +1,6 @@
 package br.edu.ufape.bank.configs;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import br.edu.ufape.bank.dto.responses.ErrorResponseDTO;
 import br.edu.ufape.bank.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -58,5 +59,28 @@ public class GlobalExceptionHandler {
             LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        
+        String message = "Erro de conflito de dados. Verifique se o registro já existe.";
+        
+        String cause = ex.getRootCause() != null ? ex.getRootCause().getMessage() : "";
+
+        if (cause.toLowerCase().contains("cpf")) {
+            message = "Este CPF já está cadastrado em outra conta.";
+        } else if (cause.toLowerCase().contains("email")) {
+            message = "Este email já está em uso.";
+        } else if (cause.toLowerCase().contains("keycloak_id")) {
+            message = "Usuário já vinculado.";
+        }
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+            message,
+            HttpStatus.CONFLICT.value(),
+            LocalDateTime.now()
+        );
+        
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }
