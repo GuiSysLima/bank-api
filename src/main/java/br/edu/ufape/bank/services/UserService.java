@@ -7,7 +7,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.Optional;
 
 import br.edu.ufape.bank.dto.responses.UserResponseDTO;
-import br.edu.ufape.bank.dto.responses.UserResponseDTO;
 import br.edu.ufape.bank.dto.requests.UserRequestDTO;
 import br.edu.ufape.bank.exceptions.UnprocessableEntityException;
 import br.edu.ufape.bank.exceptions.ResourceNotFoundException;

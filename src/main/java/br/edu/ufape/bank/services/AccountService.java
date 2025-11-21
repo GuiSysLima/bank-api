@@ -87,18 +87,14 @@ public class AccountService {
         
         User user = userService.getAuthenticatedUser(authentication);
 
-        // 2. Pega a conta do banco
         Account existingAccount = getAccountById(id);
         
-        // 3. VERIFICA A PROPRIEDADE (Obrigatório!)
         if (!existingAccount.getUser().getId().equals(user.getId())) {
             throw new SecurityException("Acesso negado. Esta conta não pertence a você.");
         }
         
-        // 4. Atualiza os dados com base no DTO (request)
         existingAccount.setAccountType(request.accountType());
         
-        // 5. Salva e retorna o DTO de resposta
         Account savedAccount = accountRepository.save(existingAccount);
         return new AccountResponseDTO(savedAccount);
     }
@@ -109,18 +105,14 @@ public class AccountService {
             throw new UnprocessableEntityException("Deposit amount must be greater than zero.");
         }
 
-        // 1. Pega o usuário logado
         User user = userService.getAuthenticatedUser(authentication);
 
-        // 2. Pega a conta
         Account account = getAccountById(accountId);
 
-        // 3. VERIFICA A PROPRIEDADE (A PARTE MAIS IMPORTANTE)
         if (!account.getUser().getId().equals(user.getId())) {
             throw new SecurityException("Acesso negado. Esta conta não pertence a você.");
         }
 
-        // 4. Se for o dono, continua a lógica
         BigDecimal newBalance = account.getBalance().add(amount);
         account.setBalance(newBalance);
 
