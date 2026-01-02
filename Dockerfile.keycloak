@@ -5,4 +5,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
 
 COPY ./bank-theme /opt/keycloak/themes/bank-theme
 
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--proxy-headers", "xforwarded", "--hostname-strict=false", "--http-enabled=true"]
