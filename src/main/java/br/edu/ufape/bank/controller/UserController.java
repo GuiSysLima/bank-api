@@ -2,16 +2,9 @@ package br.edu.ufape.bank.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
-
+import org.springframework.web.bind.annotation.*;
 
 import br.edu.ufape.bank.dto.responses.UserResponseDTO;
 import br.edu.ufape.bank.dto.requests.UserRequestDTO;
@@ -30,16 +23,15 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(
-            @Valid @RequestBody UserRequestDTO request, 
-            Authentication authentication 
-    ) {
-
+    public ResponseEntity<UserResponseDTO> createUser(Authentication authentication) {
         Jwt jwt = (Jwt) authentication.getPrincipal();
 
         String keycloakId = jwt.getSubject();
-        String emailDoToken = jwt.getClaimAsString("email");
-        UserResponseDTO newUser = userService.createUser(request, keycloakId);
+        String email = jwt.getClaimAsString("email");
+        String name = jwt.getClaimAsString("name");
+        String cpf = jwt.getClaimAsString("cpf"); 
+
+        UserResponseDTO newUser = userService.createUser(keycloakId, name, email, cpf);
 
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
@@ -71,11 +63,8 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getMyProfile(Authentication authentication) {
         return userService.findAuthenticatedUser(authentication)
-            
-            .map(user -> new UserResponseDTO(user)) 
-            
+            .map(UserResponseDTO::new) // Sintaxe mais limpa (Reference Method)
             .map(ResponseEntity::ok)
-
             .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }

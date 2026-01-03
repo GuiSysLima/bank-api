@@ -14,7 +14,6 @@ import br.edu.ufape.bank.model.User;
 import br.edu.ufape.bank.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
-
 @Service
 public class UserService {
    
@@ -25,16 +24,20 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDTO createUser(UserRequestDTO request, String keycloakId) {
-        if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new UnprocessableEntityException("Email already in use: " + request.email());
+    public UserResponseDTO createUser(String keycloakId, String name, String email, String cpf) {
+        if (userRepository.findByKeycloakId(keycloakId).isPresent()) {
+             return toResponseDTO(userRepository.findByKeycloakId(keycloakId).get());
+        }
+        
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new UnprocessableEntityException("Email already in use: " + email);
         }
 
         User newUser = new User();
-        newUser.setName(request.name());
-        newUser.setEmail(request.email());
-        newUser.setCpf(request.cpf());
         newUser.setKeycloakId(keycloakId);
+        newUser.setName(name);
+        newUser.setEmail(email);
+        newUser.setCpf(cpf);
         
         User savedUser = userRepository.save(newUser);
 
@@ -63,10 +66,8 @@ public class UserService {
         if (authentication == null || !authentication.isAuthenticated()) {
             return Optional.empty();
         }
-        
         Jwt jwt = (Jwt) authentication.getPrincipal();
         String keycloakId = jwt.getSubject();
-        
         return userRepository.findByKeycloakId(keycloakId); 
     }
 
@@ -74,10 +75,8 @@ public class UserService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new SecurityException("Usuário não autenticado.");
         }
-        
         Jwt jwt = (Jwt) authentication.getPrincipal();
         String keycloakId = jwt.getSubject();
-
         return userRepository.findByKeycloakId(keycloakId)
             .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado no banco de dados"));
     }
@@ -86,7 +85,6 @@ public class UserService {
     public UserResponseDTO findUserById(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-
         return toResponseDTO(user);
     }
 
